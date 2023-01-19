@@ -1,11 +1,4 @@
-#configfile: "config.yaml"	
-Barcodes = ["AM-RNA-496", "AM-RNA-497"]
 
-rule all:
-	input: 
-		expand("{BC}_Aligned.out.genome1.bam", BC=Barcodes)
-
-# BC1 und BC2 get shortened
 rule get_BCs_surviving_10X_pipeline:
 	input:
 		"barcodes/{BC}/barcodes.tsv.gz"
@@ -27,7 +20,12 @@ rule assignment_of_BC_2_read_reduce_to_10X_BCs_part1:
 		temp("barcodes/WT_E85_{BC}_read_tmp.BC.tsv")
 	shell: 
 		"""
-		zcat {input} | sed 's/ .*//' | paste - - - - | cut -f1,2 | sed 's/^@//' | perl -ane '$F[1]=substr($F[1], 0, 16); print "$F[0]\t$F[1]\n"' > {output} 
+		zcat {input} | 
+		sed 's/ .*//' | 
+		paste - - - - | 
+		cut -f1,2 | 
+		sed 's/^@//' | 
+		perl -ane '$F[1]=substr($F[1], 0, 16); print "$F[0]\t$F[1]\n"' > {output} 
 		"""
 
 rule assignment_of_BC_2_read_reduce_to_10X_BCs_part2: 
@@ -61,7 +59,15 @@ rule alignment_using_STAR:
 		temp(directory("{BC}__STARtmp/"))
 	shell:
 		"""
-		/project/bioinf_meissner/src/STAR/STAR-2.5.3a/bin/Linux_x86_64/STAR --runThreadN 20 --genomeDir /project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2 --readFilesIn {input} --readFilesCommand zcat --alignEndsType EndToEnd --outSAMattributes NH HI NM MD --outSAMtype BAM Unsorted --outFileNamePrefix {wildcards.BC}_
+		/project/bioinf_meissner/src/STAR/STAR-2.5.3a/bin/Linux_x86_64/STAR \
+		--runThreadN 20 \
+		--genomeDir /project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2 \
+		--readFilesIn {input} \
+		--readFilesCommand zcat \
+		--alignEndsType EndToEnd \
+		--outSAMattributes NH HI NM MD \
+		--outSAMtype BAM Unsorted \
+		--outFileNamePrefix {wildcards.BC}_
 		"""
 
 rule assignment_of_reads_to_genome1:
@@ -76,13 +82,7 @@ rule assignment_of_reads_to_genome1:
 		"{BC}_Aligned.out.genome2.bam"
 	shell:
 		"""
-		perl /project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/SNPsplit --snp_file /project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/all_SNPs_CAST_EiJ_GRCm38.txt.gz {input} --samtools_path /project/bioinf_meissner/src/samtools/samtools-1.6/
+		perl /project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/SNPsplit \
+		--snp_file /project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/all_SNPs_CAST_EiJ_GRCm38.txt.gz {input} \
+		--samtools_path /project/bioinf_meissner/src/samtools/samtools-1.6/
 		"""
-
-#rule clean-up:
-#	input:
-#	output:
-#	shell:
-#		"""
-#		rm -r ${SAMPLE}__STARtmp
-#		"""

@@ -1,0 +1,8 @@
+#configfile: "config.yaml"	
+Barcodes = ["AM-RNA-496", "AM-RNA-497"]
+
+rule all:
+    input:
+        expand("{BC}_splitread.bed", BC=Barcodes)
+
+include: "rules/module2.smk"
