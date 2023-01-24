@@ -3,6 +3,33 @@ Barcodes = ["AM-RNA-496", "AM-RNA-497"]
 
 rule all:
     input:
-        expand("{BC}_splitread.bed", BC=Barcodes)
+        "results/splitreads/WT_E85_SNPcount.tsv"
 
+# In case of multiple libraries, combine aggregated data
+rule combine_aggregated_data:
+    input:
+        barcode1 = "results/splitreads/AM-RNA-496_SNPcount.tsv",
+        barcode2 = "results/splitreads/AM-RNA-497_SNPcount.tsv"
+    output:
+        "results/splitreads/WT_E85_SNPcount.tsv"
+    shell:
+        """
+        cat {input.barcode1} | 
+        perl -ane 'print "$F[0]-1\t$F[1]\t$F[2]\n"' > {output}
+        cat {input.barcode2} | 
+        perl -ane 'print "$F[0]-2\t$F[1]\t$F[2]\n"' >> {output}
+        """
+
+# Deconvolute single cells and assign to embryos
+#rule deconvolute_aggregated_data:
+#    input:
+#        "results/splitreads/WT_E85_SNPcount.tsv"
+#    output:
+#        ""
+#    shell:
+#        """
+#        Rscript /project/Mouse_Embryos/scripts/cell2embryo.R {input} results/cell2embryo/ WT_E85
+#        """
+
+include: "rules/module1.smk"
 include: "rules/module2.smk"

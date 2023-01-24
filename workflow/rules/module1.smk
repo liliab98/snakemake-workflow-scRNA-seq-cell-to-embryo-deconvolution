@@ -3,7 +3,7 @@ rule get_BCs_surviving_10X_pipeline:
 	input:
 		"barcodes/{BC}/barcodes.tsv.gz"
 	output:
-		"barcodes/WT_E85_{BC}_10X_barcodes.tsv"
+		"results/barcodes/WT_E85_{BC}_10X_barcodes.tsv"
 	shell:
 		"""
 		if file --mime-type {input} | grep -q gzip; then
@@ -15,9 +15,9 @@ rule get_BCs_surviving_10X_pipeline:
 
 rule assignment_of_BC_2_read_reduce_to_10X_BCs_part1: 
 	input:
-		"data/test_{BC}_R1.fastq.gz"
+		"data/mpimg_L20527-1_{BC}_R1_001.fastq.gz"
 	output:
-		temp("barcodes/WT_E85_{BC}_read_tmp.BC.tsv")
+		temp("results/barcodes/WT_E85_{BC}_read_tmp.BC.tsv")
 	shell: 
 		"""
 		zcat {input} | 
@@ -30,10 +30,10 @@ rule assignment_of_BC_2_read_reduce_to_10X_BCs_part1:
 
 rule assignment_of_BC_2_read_reduce_to_10X_BCs_part2: 
 	input:
-		bc="barcodes/WT_E85_{BC}_10X_barcodes.tsv",
-		bc_read_tmp="barcodes/WT_E85_{BC}_read_tmp.BC.tsv"
+		bc="results/barcodes/WT_E85_{BC}_10X_barcodes.tsv",
+		bc_read_tmp="results/barcodes/WT_E85_{BC}_read_tmp.BC.tsv"
 	output:
-		"barcodes/WT_E85_{BC}_read.BC.tsv"
+		"results/barcodes/WT_E85_{BC}_read.BC.tsv"
 	shell: 
 		"""
 		fgrep -f {input.bc} {input.bc_read_tmp} | sort > {output}
@@ -49,40 +49,43 @@ rule assignment_of_BC_2_read_reduce_to_10X_BCs_part2:
 
 rule alignment_using_STAR:
 	input:
-		"data/test_{BC}_R2.fastq.gz"
+		"data/mpimg_L20527-1_{BC}_R2_001.fastq.gz"
 	output:
-		temp("{BC}_Aligned.out.bam"),
-		temp("{BC}_Log.final.out"),
-		temp("{BC}_Log.out"),
-		temp("{BC}_Log.progress.out"),
-		temp("{BC}_SJ.out.tab"),
-		temp(directory("{BC}__STARtmp/"))
+		temp("results/alignment/{BC}_Aligned.out.bam"),
+		temp("results/alignment/{BC}_Log.final.out"),
+		temp("results/alignment/{BC}_Log.out"),
+		temp("results/alignment/{BC}_Log.progress.out"),
+		temp("results/alignment/{BC}_SJ.out.tab"),
+		temp(directory("results/alignment/{BC}__STARtmp/"))
+	threads: 20
 	shell:
 		"""
 		/project/bioinf_meissner/src/STAR/STAR-2.5.3a/bin/Linux_x86_64/STAR \
 		--runThreadN 20 \
+		--outBAMsortingThreadN 20 \
 		--genomeDir /project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2 \
 		--readFilesIn {input} \
 		--readFilesCommand zcat \
 		--alignEndsType EndToEnd \
 		--outSAMattributes NH HI NM MD \
 		--outSAMtype BAM Unsorted \
-		--outFileNamePrefix {wildcards.BC}_
+		--outFileNamePrefix results/alignment/{wildcards.BC}_
 		"""
 
 rule assignment_of_reads_to_genome1:
 	input:
-		"{BC}_Aligned.out.bam"
+		"results/alignment/{BC}_Aligned.out.bam"
 	output:
-		temp("{BC}_Aligned.out.SNPsplit_sort.txt"), 
-		temp("{BC}_Aligned.out.SNPsplit_report.txt"),
-		temp("{BC}_Aligned.out.unassigned.bam"), 
-		"{BC}_Aligned.out.allele_flagged.bam",
-		"{BC}_Aligned.out.genome1.bam",
-		"{BC}_Aligned.out.genome2.bam"
+		temp("results/alignment/{BC}_Aligned.out.SNPsplit_sort.txt"), 
+		temp("results/alignment/{BC}_Aligned.out.SNPsplit_report.txt"),
+		temp("results/alignment/{BC}_Aligned.out.unassigned.bam"), 
+		"results/alignment/{BC}_Aligned.out.allele_flagged.bam",
+		temp("results/alignment/{BC}_Aligned.out.genome1.bam"),
+		temp("results/alignment/{BC}_Aligned.out.genome2.bam")
+	threads: 20
 	shell:
 		"""
 		perl /project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/SNPsplit \
 		--snp_file /project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/all_SNPs_CAST_EiJ_GRCm38.txt.gz {input} \
-		--samtools_path /project/bioinf_meissner/src/samtools/samtools-1.6/
+		--samtools_path /project/bioinf_meissner/src/samtools/samtools-1.6/ 
 		"""
