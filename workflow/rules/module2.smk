@@ -1,10 +1,9 @@
-
 rule filter_for_unambigous_alignments1:
     input:
-        genome1 = "results/alignment/{BC}_Aligned.out.genome1.bam",
-        genome2 = "results/alignment/{BC}_Aligned.out.genome2.bam"
+        genome1 = "results/alignment/{sample}_Aligned.out.genome1.bam",
+        genome2 = "results/alignment/{sample}_Aligned.out.genome2.bam"
     output:
-        "results/splitreads/{BC}_splitread.bed"
+        "results/snp/{sample}_splitread.bed"
     shell:
         """
         /project/bioinf_meissner/src/samtools/samtools-1.6/samtools merge -n - {input.genome1} {input.genome2} | 
@@ -19,9 +18,9 @@ rule filter_for_unambigous_alignments1:
 
 rule filter_for_unambigous_alignments2:
     input:
-        "results/splitreads/{BC}_splitread.bed"
+        "results/snp/{sample}_splitread.bed"
     output:
-        temp("results/splitreads/{BC}_unambiguous.tmp")
+        temp("results/snp/{sample}_unambiguous.tmp")
     shell:
         """
         less {input} | 
@@ -31,9 +30,9 @@ rule filter_for_unambigous_alignments2:
 
 rule filter_for_unambigous_alignments3:
     input:
-        "results/splitreads/{BC}_unambiguous.tmp"
+        "results/snp/{sample}_unambiguous.tmp"
     output:
-        temp("results/splitreads/{BC}_unambiguous.bed")
+        temp("results/snp/{sample}_unambiguous.bed")
     shell:
         """
         /project/bioinf_meissner/src/bedtools/bedtools/bin/bedtools sort -i {input} > {output}
@@ -41,9 +40,9 @@ rule filter_for_unambigous_alignments3:
 
 rule assignemnt_of_reads_to_SNP:
     input:
-        "results/splitreads/{BC}_unambiguous.bed"
+        "results/snp/{sample}_unambiguous.bed"
     output:
-        temp("results/splitreads/{BC}_SNP.tsv")
+        temp("results/snp/{sample}_SNP.tsv")
     shell:
         """
         /project/bioinf_meissner/src/bedtools/bedtools/bin/bedtools intersect -sorted -wa -wb -a {input} -b /project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/all_SNPs_CAST_EiJ_GRCm38.bed | 
@@ -52,30 +51,32 @@ rule assignemnt_of_reads_to_SNP:
 
 rule get_only_white_list_SNPs:
     input:
-        "results/splitreads/{BC}_SNP.tsv"
+        "results/snp/{sample}_SNP.tsv"
     output:
-        whitelistSNP = "results/splitreads/{BC}_whitelistSNP.tsv",
-        allSNP = "results/splitreads/{BC}_allSNP.tsv"
+        whitelistSNP = "results/snp/{sample}_whitelistSNP.tsv",
+        allSNP = "results/snp/{sample}_allSNP.tsv"
+    params: 
+        scrna= config["whitelist"]
     shell:
         """
-        fgrep -w -f data/scRNA/WT_SNP_white.list.tsv {input} | 
+        fgrep -w -f {params.scrna} {input} | 
         perl -ane 'print "$F[1].$F[3]\t$F[2]\t$F[0]\n"' | 
         sort -k2,2 | 
         uniq > {output.whitelistSNP}
-        cat data/scRNA/WT_SNP_white.list.tsv {input} | 
+        cat {params.scrna} {input} | 
         perl -ane 'print "$F[1].$F[3]\t$F[2]\t$F[0]\n"' | 
-        sort -k2,2 | 
+        sort -k2,2 -k3,3 | 
         uniq > {output.allSNP}
         """
 
 rule convert_read_to_BC_information:
     input:
-        whitelistSNP = "results/splitreads/{BC}_whitelistSNP.tsv",
-        allSNP = "results/splitreads/{BC}_allSNP.tsv",
-        readBC = "results/barcodes/WT_E85_{BC}_read.BC.tsv"
+        whitelistSNP = "results/snp/{sample}_whitelistSNP.tsv",
+        allSNP = "results/snp/{sample}_allSNP.tsv",
+        readBC = "results/barcodes/WT_E85_{sample}_read.BC.tsv"
     output:
-        SNPcount = "results/splitreads/{BC}_SNPcount.tsv",
-        allSNPcount = "results/splitreads/{BC}_allSNPcount.tsv"
+        SNPcount = "results/snp-count/{sample}_SNPcount.tsv",
+        allSNPcount = "results/snp-count/{sample}_allSNPcount.tsv"
     shell:
         """
         join -1 2 -2 1 {input.whitelistSNP} {input.readBC}| 

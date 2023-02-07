@@ -1,0 +1,26 @@
+#Samples: ["AM-RNA-496", "AM-RNA-497"]
+
+Barcodes:
+  AM-RNA-496: "barcodes/AM-RNA-496/"
+  AM-RNA-497: "barcodes/AM-RNA-497/"
+
+Samples:
+  AM-RNA-496: "data/test_AM-RNA-496"
+  AM-RNA-497: "data/test_AM-RNA-497"
+
+whitelist: "data/scRNA/WT_SNP_white.list.tsv"
+
+#geno_path: '/project/scRNA_processing/Genotyping/RNA_493-499_WT_65-90_v3'
+ID: "WT_E85"
+KO: "WT"
+AGE: "85"
+C: "v3"
+N: x
+#BC: "/project/meissner_seq_data/RNAseq/2021-06-04_HK_cr6_reprocessing_mm10/aggr/cr_aggr_WT_85/outs/count/filtered_feature_bc_matrix/""
+
+ID1: "WT_E85_AM-RNA-496"
+ID2: "WT_E85_AM-RNA-497"
+#BC1: "/project/meissner_seq_data/RNAseq/2021-06-04_HK_cr6_reprocessing_mm10/cr-count_mm10_AM-RNA-496/outs/raw_feature_bc_matrix/barcodes.tsv.gz"
+#BC2: "/project/meissner_seq_data/RNAseq/2021-06-04_HK_cr6_reprocessing_mm10/cr-count_mm10_AM-RNA-497/outs/raw_feature_bc_matrix/barcodes.tsv.gz"
+#ID1_R1: "/project/scRNA_processing/Genotyping/RNA_493-499_WT_65-90_v3/00_Fastq/mpimg_L20527-1_AM-RNA-496_R1_001.fastq.gz"
+#ID2_R1: "/project/scRNA_processing/Genotyping/RNA_493-499_WT_65-90_v3/00_Fastq/mpimg_L20527-1_AM-RNA-497_R1_001.fastq.gz"

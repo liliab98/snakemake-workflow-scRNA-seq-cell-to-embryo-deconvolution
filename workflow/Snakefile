@@ -1,23 +1,20 @@
-#configfile: "config.yaml"	
-Barcodes = ["AM-RNA-496", "AM-RNA-497"]
+configfile: "config/config.yaml"	
 
 rule all:
     input:
-        "results/splitreads/WT_E85_SNPcount.tsv"
+        #expand("results/barcodes/WT_E85_{sample}_read.BC.tsv", sample=config["Barcodes"])
+        "results/snp-count/WT_E85_SNPcount.tsv"
+
 
 # In case of multiple libraries, combine aggregated data
 rule combine_aggregated_data:
     input:
-        barcode1 = "results/splitreads/AM-RNA-496_SNPcount.tsv",
-        barcode2 = "results/splitreads/AM-RNA-497_SNPcount.tsv"
+        expand("results/snp-count/{sample}_allSNPcount.tsv", sample=config["Samples"])
     output:
-        "results/splitreads/WT_E85_SNPcount.tsv"
+        "results/snp-count/WT_E85_SNPcount.tsv"
     shell:
         """
-        cat {input.barcode1} | 
-        perl -ane 'print "$F[0]-1\t$F[1]\t$F[2]\n"' > {output}
-        cat {input.barcode2} | 
-        perl -ane 'print "$F[0]-2\t$F[1]\t$F[2]\n"' >> {output}
+        awk '{{printf $1 "-" ARGIND "\\t" $2 "\\t" $3 "\\n" }}' {input} > {output}
         """
 
 # Deconvolute single cells and assign to embryos
@@ -26,9 +23,11 @@ rule combine_aggregated_data:
 #        "results/splitreads/WT_E85_SNPcount.tsv"
 #    output:
 #        ""
+#    conda:
+#    "envs/r.yaml"
 #    shell:
 #        """
-#        Rscript /project/Mouse_Embryos/scripts/cell2embryo.R {input} results/cell2embryo/ WT_E85
+#        Rscript-3.6.3 /project/Mouse_Embryos/scripts/cell2embryo.R {input} results/cell2embryo/ WT_E85
 #        """
 
 include: "rules/module1.smk"
