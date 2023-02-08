@@ -2,7 +2,7 @@ configfile: "config/config.yaml"
 
 rule all:
     input:
-        #expand("results/barcodes/WT_E85_{sample}_read.BC.tsv", sample=config["Barcodes"])
+        #expand("results/snp-count/{sample}_allSNPcount.tsv", sample=config["Barcodes"])
         "results/snp-count/WT_E85_SNPcount.tsv"
 
 
@@ -12,9 +12,11 @@ rule combine_aggregated_data:
         expand("results/snp-count/{sample}_allSNPcount.tsv", sample=config["Samples"])
     output:
         "results/snp-count/WT_E85_SNPcount.tsv"
+    log:
+        "logs/combine_aggregated_data/WT_E85.log"
     shell:
         """
-        awk '{{printf $1 "-" ARGIND "\\t" $2 "\\t" $3 "\\n" }}' {input} > {output}
+        awk '{{printf $1 "-" ARGIND "\\t" $2 "\\t" $3 "\\n" }}' {input} > {output} 2> {log}
         """
 
 # Deconvolute single cells and assign to embryos
