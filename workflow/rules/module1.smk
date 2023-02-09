@@ -5,6 +5,8 @@ rule get_BCs_surviving_10X_pipeline:
 		"results/barcodes/WT_E85_{sample}_10X_barcodes.tsv"
 	log:
 		"logs/get_BCs_surviving_10X_pipeline/{sample}.log"
+	benchmark:
+		"benchmarks/get_BCs_surviving_10X_pipeline/{sample}.txt"
 	shell:
 		"""
 		if file --mime-type {input} | grep -q gzip$; then
@@ -21,6 +23,8 @@ rule assignment_of_BC_2_read_reduce_to_10X_BCs_part1:
 		temp("results/barcodes/WT_E85_{sample}_read.BC.tmp")
 	log:
 		"logs/assignment_of_BC_2_read_reduce_to_10X_BCs_part1/{sample}.log"
+	benchmark:
+		"benchmarks/assignment_of_BC_2_read_reduce_to_10X_BCs_part1/{sample}.txt"
 	shell: 
 		"""
 		zcat {input} | 
@@ -39,6 +43,8 @@ rule assignment_of_BC_2_read_reduce_to_10X_BCs_part2:
 		"results/barcodes/WT_E85_{sample}_read.BC.tsv"
 	log:
 		"logs/assignment_of_BC_2_read_reduce_to_10X_BCs_part2/{sample}.log"
+	benchmark:
+		"benchmarks/assignment_of_BC_2_read_reduce_to_10X_BCs_part2/{sample}.txt"
 	shell: 
 		"""
 		fgrep -f {input.bc} {input.bc_read_tmp} | 
@@ -66,6 +72,9 @@ rule alignment_using_STAR:
 		temp(directory("results/alignment/{sample}__STARtmp/"))
 	log: 
 		"logs/alignment_using_STAR/{sample}.log"
+	benchmark:
+		"benchmarks/alignment_using_STAR/{sample}.log"
+	threads: 20
 	shell:
 		"""
 		/project/bioinf_meissner/src/STAR/STAR-2.5.3a/bin/Linux_x86_64/STAR \
@@ -92,6 +101,9 @@ rule assignment_of_reads_to_genome1:
 		"results/alignment/{sample}_Aligned.out.genome2.bam"	#tmp?
 	log:
 		"logs/assignment_of_reads_to_genome1/{sample}.log"
+	benchmark:
+		"benchmarks/assignment_of_reads_to_genome1/{sample}.log"
+	threads: 8
 	shell:
 		"""
 		perl /project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/SNPsplit \

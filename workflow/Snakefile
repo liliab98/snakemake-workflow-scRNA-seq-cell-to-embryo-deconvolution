@@ -2,7 +2,7 @@ configfile: "config/config.yaml"
 
 rule all:
     input:
-        #expand("results/snp-count/{sample}_allSNPcount.tsv", sample=config["Barcodes"])
+        #expand("results/snp-count/{sample}_SNPcount.tsv", sample=config["Barcodes"])
         "results/snp-count/WT_E85_SNPcount.tsv"
 
 
@@ -14,6 +14,8 @@ rule combine_aggregated_data:
         "results/snp-count/WT_E85_SNPcount.tsv"
     log:
         "logs/combine_aggregated_data/WT_E85.log"
+    benchmark:
+        "benchmarks/combine_aggregated_data/WT_E85.txt"
     shell:
         """
         awk '{{printf $1 "-" ARGIND "\\t" $2 "\\t" $3 "\\n" }}' {input} > {output} 2> {log}
@@ -32,5 +34,5 @@ rule combine_aggregated_data:
 #        Rscript-3.6.3 /project/Mouse_Embryos/scripts/cell2embryo.R {input} results/cell2embryo/ WT_E85
 #        """
 
-include: "rules/module1.smk"
-include: "rules/module2.smk"
+include: "rules/SNP_based_cell_to_embryo_assignment.smk"
+include: "rules/prepare_alignment_for_deconvolution.smk"

@@ -6,6 +6,8 @@ rule filter_for_unambigous_alignments1:
         "results/snp/{sample}_splitread.bed"
     log:
         "logs/filter_for_unambigous_alignments1/{sample}.log"
+    benchmark:
+        "benchmarks/filter_for_unambigous_alignments1/{sample}.txt"
     shell:
         """
         /project/bioinf_meissner/src/samtools/samtools-1.6/samtools merge -n - {input.genome1} {input.genome2} | 
@@ -25,6 +27,8 @@ rule filter_for_unambigous_alignments2:
         temp("results/snp/{sample}_unambiguous.tmp")
     log:
         "logs/filter_for_unambigous_alignments2/{sample}.log"
+    benchmark:
+        "benchmarks/filter_for_unambigous_alignments2/{sample}.txt"
     shell:
         """
         less {input} | 
@@ -39,18 +43,23 @@ rule filter_for_unambigous_alignments3:
         temp("results/snp/{sample}_unambiguous.bed")
     log:
         "logs/filter_for_unambigous_alignments3/{sample}.log"
+    benchmark:
+        "benchmarks/filter_for_unambigous_alignments3/{sample}.txt"
     shell:
         """
         /project/bioinf_meissner/src/bedtools/bedtools/bin/bedtools sort -i {input} > {output} 2> {log}
         """
 
-rule assignemnt_of_reads_to_SNP:
+rule assignment_of_reads_to_SNP:
     input:
         "results/snp/{sample}_unambiguous.bed"
     output:
         temp("results/snp/{sample}_SNP.tsv")
     log:
-        "logs/assignemnt_of_reads_to_SNP/{sample}.log"
+        "logs/assignment_of_reads_to_SNP/{sample}.log"
+    benchmark:
+        "benchmarks/assignment_of_reads_to_SNP/{sample}.txt"
+    threads: 4
     shell:
         """
         /project/bioinf_meissner/src/bedtools/bedtools/bin/bedtools intersect -sorted -wa -wb -a {input} -b /project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/all_SNPs_CAST_EiJ_GRCm38.bed | 
@@ -67,6 +76,9 @@ rule get_only_white_list_SNPs:
         scrna= config["whitelist"]
     log:
         "logs/get_only_white_list_SNPs/{sample}.log"
+    benchmark:
+        "benchmarks/get_only_white_list_SNPs/{sample}.txt"
+    threads: 8
     shell:
         """
         fgrep -w -f {params.scrna} {input} | 
@@ -89,6 +101,8 @@ rule convert_read_to_BC_information:
         allSNPcount = "results/snp-count/{sample}_allSNPcount.tsv"
     log:
         "logs/convert_read_to_BC_information/{sample}.log"
+    benchmark:
+        "benchmarks/convert_read_to_BC_information/{sample}.txt"
     shell:
         """
         join -1 2 -2 1 {input.whitelistSNP} {input.readBC}| 

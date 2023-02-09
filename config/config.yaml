@@ -1,14 +1,14 @@
 #Samples: ["AM-RNA-496", "AM-RNA-497"]
 
 Barcodes:
-  AM-RNA-496: "barcodes/AM-RNA-496/"
-  AM-RNA-497: "barcodes/AM-RNA-497/"
+  AM-RNA-496: "resources/barcodes/AM-RNA-496/"
+  AM-RNA-497: "resources/barcodes/AM-RNA-497/"
 
 Samples:
-  AM-RNA-496: "data/test_AM-RNA-496"
-  AM-RNA-497: "data/test_AM-RNA-497"
+  AM-RNA-496: "resources/data/test_AM-RNA-496"
+  AM-RNA-497: "resources/data/test_AM-RNA-497"
 
-whitelist: "data/scRNA/WT_SNP_white.list.tsv"
+whitelist: "resources/scRNA/WT_SNP_white.list.tsv"
 
 #geno_path: '/project/scRNA_processing/Genotyping/RNA_493-499_WT_65-90_v3'
 ID: "WT_E85"
