@@ -1,0 +1,9 @@
+channels:
+- r
+dependencies:
+- r=3.6.3
+#- r-RColorBrewer
+#- r-reshape2
+#- r-ggplot2
+#- r-scales
+#- r-sfsmisc

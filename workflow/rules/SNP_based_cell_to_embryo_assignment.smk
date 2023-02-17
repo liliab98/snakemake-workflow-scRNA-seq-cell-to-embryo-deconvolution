@@ -18,7 +18,7 @@ rule get_BCs_surviving_10X_pipeline:
 
 rule assignment_of_BC_2_read_reduce_to_10X_BCs_part1: 
 	input:
-		lambda wildcards: f"{config['Samples'][wildcards.sample]}_R1.fastq.gz"
+		lambda wildcards: f"{config['Samples'][wildcards.sample]}_R1_001.fastq.gz"
 	output:
 		temp("results/barcodes/WT_E85_{sample}_read.BC.tmp")
 	log:
@@ -62,7 +62,7 @@ rule assignment_of_BC_2_read_reduce_to_10X_BCs_part2:
 
 rule alignment_using_STAR:
 	input:
-		lambda wildcards: f"{config['Samples'][wildcards.sample]}_R2.fastq.gz"
+		lambda wildcards: f"{config['Samples'][wildcards.sample]}_R2_001.fastq.gz"
 	output:
 		"results/alignment/{sample}_Aligned.out.bam", #temp? 
 		temp("results/alignment/{sample}_Log.final.out"),
@@ -70,6 +70,9 @@ rule alignment_using_STAR:
 		temp("results/alignment/{sample}_Log.progress.out"),
 		temp("results/alignment/{sample}_SJ.out.tab"),
 		temp(directory("results/alignment/{sample}__STARtmp/"))
+	params:
+		star = config["star_path"],
+		SNPsplit_dir = config["SNPsplit_dir_path"]
 	log: 
 		"logs/alignment_using_STAR/{sample}.log"
 	benchmark:
@@ -77,10 +80,10 @@ rule alignment_using_STAR:
 	threads: 20
 	shell:
 		"""
-		/project/bioinf_meissner/src/STAR/STAR-2.5.3a/bin/Linux_x86_64/STAR \
-		--runThreadN 20 \
-		--outBAMsortingThreadN 20 \
-		--genomeDir /project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2 \
+		{params.star} \
+		--runThreadN {threads} \
+		--outBAMsortingThreadN {threads} \
+		--genomeDir {params.SNPsplit_dir} \
 		--readFilesIn {input} \
 		--readFilesCommand zcat \
 		--alignEndsType EndToEnd \
@@ -99,6 +102,10 @@ rule assignment_of_reads_to_genome1:
 		"results/alignment/{sample}_Aligned.out.allele_flagged.bam",
 		"results/alignment/{sample}_Aligned.out.genome1.bam",	#tmp?
 		"results/alignment/{sample}_Aligned.out.genome2.bam"	#tmp?
+	params:
+		SNPsplit = config["SNPsplit_path"],
+		SNPfile_gz = config["SNPfile_gz_path"],
+		samtools_dir = config["samtools_dir_path"]	
 	log:
 		"logs/assignment_of_reads_to_genome1/{sample}.log"
 	benchmark:
@@ -106,8 +113,8 @@ rule assignment_of_reads_to_genome1:
 	threads: 8
 	shell:
 		"""
-		perl /project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/SNPsplit \
-		--snp_file /project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/all_SNPs_CAST_EiJ_GRCm38.txt.gz {input} \
-		--samtools_path /project/bioinf_meissner/src/samtools/samtools-1.6/ 2> {log} 
+		perl {params.SNPsplit} \
+		--snp_file {params.SNPfile_gz} {input} \
+		--samtools_path {params.samtools_dir} 2> {log} 
 		"""
 #why is 2>&1 not working?

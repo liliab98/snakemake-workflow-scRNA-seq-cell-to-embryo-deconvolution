@@ -1,26 +1,26 @@
-#Samples: ["AM-RNA-496", "AM-RNA-497"]
-
+# data
 Barcodes:
   AM-RNA-496: "resources/barcodes/AM-RNA-496/"
   AM-RNA-497: "resources/barcodes/AM-RNA-497/"
 
 Samples:
-  AM-RNA-496: "resources/data/test_AM-RNA-496"
-  AM-RNA-497: "resources/data/test_AM-RNA-497"
+  AM-RNA-496: "resources/data/mpimg_L20527-1_AM-RNA-496"
+  AM-RNA-497: "resources/data/mpimg_L20527-1_AM-RNA-497"
 
-whitelist: "resources/scRNA/WT_SNP_white.list.tsv"
+SNPwhite_list_path: "resources/scRNA/WT_SNP_white.list.tsv"
+SNPfile_gz_path: "/project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/all_SNPs_CAST_EiJ_GRCm38.txt.gz"
+SNPfile_bed_path: "/project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/all_SNPs_CAST_EiJ_GRCm38.bed"
+matrix_dir: "resources/barcodes/matrix/"
 
-#geno_path: '/project/scRNA_processing/Genotyping/RNA_493-499_WT_65-90_v3'
+# tools
+star_path: "/project/bioinf_meissner/src/STAR/STAR-2.5.3a/bin/Linux_x86_64/STAR"
+SNPsplit_dir_path: "/project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2"
+SNPsplit_path: "/project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/SNPsplit"
+samtools_dir_path: "/project/bioinf_meissner/src/samtools/samtools-1.6/"
+samtools_path: "/project/bioinf_meissner/src/samtools/samtools-1.6/samtools"
+bamToBed_path: "/project/bioinf_meissner/src/bedtools/bedtools/bin/bamToBed"
+bedtools_path: "/project/bioinf_meissner/src/bedtools/bedtools/bin/bedtools"
+
+# info
 ID: "WT_E85"
-KO: "WT"
-AGE: "85"
-C: "v3"
-N: x
-#BC: "/project/meissner_seq_data/RNAseq/2021-06-04_HK_cr6_reprocessing_mm10/aggr/cr_aggr_WT_85/outs/count/filtered_feature_bc_matrix/""
-
-ID1: "WT_E85_AM-RNA-496"
-ID2: "WT_E85_AM-RNA-497"
-#BC1: "/project/meissner_seq_data/RNAseq/2021-06-04_HK_cr6_reprocessing_mm10/cr-count_mm10_AM-RNA-496/outs/raw_feature_bc_matrix/barcodes.tsv.gz"
-#BC2: "/project/meissner_seq_data/RNAseq/2021-06-04_HK_cr6_reprocessing_mm10/cr-count_mm10_AM-RNA-497/outs/raw_feature_bc_matrix/barcodes.tsv.gz"
-#ID1_R1: "/project/scRNA_processing/Genotyping/RNA_493-499_WT_65-90_v3/00_Fastq/mpimg_L20527-1_AM-RNA-496_R1_001.fastq.gz"
-#ID2_R1: "/project/scRNA_processing/Genotyping/RNA_493-499_WT_65-90_v3/00_Fastq/mpimg_L20527-1_AM-RNA-497_R1_001.fastq.gz"
+#embryo_nr: NA

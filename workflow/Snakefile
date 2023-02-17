@@ -2,37 +2,55 @@ configfile: "config/config.yaml"
 
 rule all:
     input:
-        #expand("results/snp-count/{sample}_SNPcount.tsv", sample=config["Barcodes"])
-        "results/snp-count/WT_E85_SNPcount.tsv"
-
+        expand("results/sex2embryo/{param}_sex2embryo.RData", param=config["ID"])
 
 # In case of multiple libraries, combine aggregated data
 rule combine_aggregated_data:
     input:
         expand("results/snp-count/{sample}_allSNPcount.tsv", sample=config["Samples"])
     output:
-        "results/snp-count/WT_E85_SNPcount.tsv"
+        "results/snp-count/{param}_SNPcount.tsv"
     log:
-        "logs/combine_aggregated_data/WT_E85.log"
+        "logs/{param}_combine_aggregated_data.log"
     benchmark:
-        "benchmarks/combine_aggregated_data/WT_E85.txt"
+        "benchmarks/{param}_combine_aggregated_data.txt"
     shell:
         """
         awk '{{printf $1 "-" ARGIND "\\t" $2 "\\t" $3 "\\n" }}' {input} > {output} 2> {log}
         """
 
 # Deconvolute single cells and assign to embryos
-#rule deconvolute_aggregated_data:
-#    input:
-#        "results/splitreads/WT_E85_SNPcount.tsv"
-#    output:
-#        ""
-#    conda:
-#    "envs/r.yaml"
-#    shell:
-#        """
-#        Rscript-3.6.3 /project/Mouse_Embryos/scripts/cell2embryo.R {input} results/cell2embryo/ WT_E85
-#        """
+rule deconvolute_aggregated_data:
+    input:
+        "results/snp-count/{param}_SNPcount.tsv" 
+    output:
+        pdf = "results/cell2embryo/{param}_cell2embryo.pdf",
+        cluster_rdata = "results/cell2embryo/{param}_cell2embryo.RData",
+        snp_profile = "results/cell2embryo/{param}_cell2embryo_SNPprofile.pdf",
+        session_rdata = "results/cell2embryo/{param}_cell2embryo_session.RData"
+    log: 
+        "logs/{param}_deconvolute_aggregated_data.log"
+    benchmark:
+        "benchmarks/{param}_deconvolute_aggregated_data.txt"
+    #threads: 30: 9372.1930 2:36:12, 16: 9386.8400 2:36:26, 8:9658.9963 2:40:58, 4:9472.1078 2:37:52, 1: 9343.0175 2:35:43
+    #conda:
+    #    "envs/rscripts.yaml"
+    script:
+        "scripts/cell2embryo.R"     
+
+# Determine sex of embryo
+rule determine_sex:
+    input:
+        "results/cell2embryo/{param}_cell2embryo.RData"
+    output:
+        "results/sex2embryo/{param}_sex2embryo.RData"
+    log:
+        "logs/{param}_determine_sex.log"
+    benchmark:
+        "benchmarks/{param}_determine_sex.txt"
+    #conda:
+    #    "envs/rscripts.yaml"
+    script: "scripts/sex2embryo_v3.R"
 
 include: "rules/SNP_based_cell_to_embryo_assignment.smk"
 include: "rules/prepare_alignment_for_deconvolution.smk"
