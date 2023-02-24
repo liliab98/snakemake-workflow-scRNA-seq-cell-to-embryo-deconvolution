@@ -71,16 +71,17 @@ rule alignment_using_STAR:
 		temp("results/alignment/{sample}_SJ.out.tab"),
 		temp(directory("results/alignment/{sample}__STARtmp/"))
 	params:
-		star = config["star_path"],
 		SNPsplit_dir = config["SNPsplit_dir_path"]
 	log: 
 		"logs/alignment_using_STAR/{sample}.log"
 	benchmark:
 		"benchmarks/alignment_using_STAR/{sample}.log"
 	threads: 20
+	conda:
+		"../envs/alignment.yaml"
 	shell:
 		"""
-		{params.star} \
+		STAR \
 		--runThreadN {threads} \
 		--outBAMsortingThreadN {threads} \
 		--genomeDir {params.SNPsplit_dir} \
@@ -91,7 +92,7 @@ rule alignment_using_STAR:
 		--outSAMtype BAM Unsorted \
 		--outFileNamePrefix results/alignment/{wildcards.sample}_ 2>&1 {log}
 		"""
-
+#{params.star}
 rule assignment_of_reads_to_genome1:
 	input:
 		"results/alignment/{sample}_Aligned.out.bam"
@@ -111,6 +112,8 @@ rule assignment_of_reads_to_genome1:
 	benchmark:
 		"benchmarks/assignment_of_reads_to_genome1/{sample}.log"
 	threads: 8
+	conda:
+		"../envs/snp.yaml"
 	shell:
 		"""
 		perl {params.SNPsplit} \

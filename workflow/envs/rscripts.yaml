@@ -1,9 +1,11 @@
+name: r
 channels:
-- r
+  - conda-forge
+  - r
 dependencies:
-- r=3.6.3
-#- r-RColorBrewer
-#- r-reshape2
-#- r-ggplot2
-#- r-scales
-#- r-sfsmisc
+  - r=4.2.0 # funktioniert: 4.2.0, 3.6.0 # funktioniert nicht: 3.6.1 # gewünscht 3.6.3
+  - r-rcolorbrewer=1.1_3
+  - r-reshape2=1.4.4
+  - r-ggplot2=3.4.1 # conda-forge: 3.4.1, r: 3.3.6
+  - r-scales=1.2.1 # conda-forge: 1.2.1, r: 1.2.0
+  - r-sfsmisc=1.1_14 # conda-forge: 1.1_14, r: 1.1_13

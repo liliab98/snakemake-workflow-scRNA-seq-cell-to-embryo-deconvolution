@@ -2,7 +2,7 @@ configfile: "config/config.yaml"
 
 rule all:
     input:
-        expand("results/sex2embryo/{param}_sex2embryo.RData", param=config["ID"])
+        expand("results/snp/{sample}_splitread.bed", sample=config["Samples"])
 
 # In case of multiple libraries, combine aggregated data
 rule combine_aggregated_data:
@@ -33,8 +33,8 @@ rule deconvolute_aggregated_data:
     benchmark:
         "benchmarks/{param}_deconvolute_aggregated_data.txt"
     #threads: 30: 9372.1930 2:36:12, 16: 9386.8400 2:36:26, 8:9658.9963 2:40:58, 4:9472.1078 2:37:52, 1: 9343.0175 2:35:43
-    #conda:
-    #    "envs/rscripts.yaml"
+    conda:
+        "envs/rscripts.yaml"
     script:
         "scripts/cell2embryo.R"     
 
@@ -48,8 +48,8 @@ rule determine_sex:
         "logs/{param}_determine_sex.log"
     benchmark:
         "benchmarks/{param}_determine_sex.txt"
-    #conda:
-    #    "envs/rscripts.yaml"
+    conda:
+        "envs/rscripts.yaml"
     script: "scripts/sex2embryo_v3.R"
 
 include: "rules/SNP_based_cell_to_embryo_assignment.smk"
