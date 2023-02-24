@@ -3,5 +3,5 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - samtools=1.16.1
+  - samtools=1.7 # eig 1.6
   - snpsplit=0.3.4 # eig 0.3.2
