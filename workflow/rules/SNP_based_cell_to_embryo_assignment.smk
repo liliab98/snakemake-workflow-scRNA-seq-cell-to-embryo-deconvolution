@@ -25,6 +25,8 @@ rule assignment_of_BC_2_read_reduce_to_10X_BCs_part1:
 		"logs/assignment_of_BC_2_read_reduce_to_10X_BCs_part1/{sample}.log"
 	benchmark:
 		"benchmarks/assignment_of_BC_2_read_reduce_to_10X_BCs_part1/{sample}.txt"
+	conda:
+		"../envs/perl.yaml"
 	shell: 
 		"""
 		zcat {input} | 
@@ -112,8 +114,8 @@ rule assignment_of_reads_to_genome1:
 	benchmark:
 		"benchmarks/assignment_of_reads_to_genome1/{sample}.log"
 	threads: 8
-	conda:
-		"../envs/snp.yaml"
+	#conda:
+	#	"../envs/snp.yaml"
 	shell:
 		"""
 		perl {params.SNPsplit} \

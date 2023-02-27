@@ -2,5 +2,6 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - samtools=1.6
+  - perl=5.26.2
+  - samtools=1.6 #1.7???
   - bedtools=2.30.0

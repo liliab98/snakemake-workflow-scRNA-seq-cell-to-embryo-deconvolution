@@ -2,7 +2,8 @@ configfile: "config/config.yaml"
 
 rule all:
     input:
-        expand("results/snp/{sample}_splitread.bed", sample=config["Samples"])
+        expand("results/sex2embryo/{param}_sex2embryo.RData", param=config["ID"])
+        #expand("results/snp/{sample}_splitread.bed", sample=config["Samples"])
 
 # In case of multiple libraries, combine aggregated data
 rule combine_aggregated_data:

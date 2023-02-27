@@ -9,7 +9,7 @@ rule filter_for_unambigous_alignments1:
     benchmark:
         "benchmarks/filter_for_unambigous_alignments1/{sample}.txt"
     conda:
-        "../envs/bed-samtools.yaml"
+        "../envs/bed_sam_tools.yaml"
     shell:
         """
         samtools merge -n - {input.genome1} {input.genome2} | 
@@ -32,7 +32,7 @@ rule filter_for_unambigous_alignments2:
     benchmark:
         "benchmarks/filter_for_unambigous_alignments2/{sample}.txt"
     conda:
-        "../envs/bed-samtools.yaml"
+        "../envs/bed_sam_tools.yaml"
     shell:
         """
         less {input} | 
@@ -50,7 +50,7 @@ rule filter_for_unambigous_alignments3:
     benchmark:
         "benchmarks/filter_for_unambigous_alignments3/{sample}.txt"
     conda:
-        "../envs/bed-samtools.yaml"
+        "../envs/bed_sam_tools.yaml"
     shell:
         """
         bedtools sort -i {input} > {output} 2> {log}
@@ -69,7 +69,7 @@ rule assignment_of_reads_to_SNP:
         "benchmarks/assignment_of_reads_to_SNP/{sample}.txt"
     threads: 4
     conda:
-        "../envs/bed-samtools.yaml"
+        "../envs/bed_sam_tools.yaml"
     shell:
         """
         bedtools intersect -sorted -wa -wb -a {input} -b {params.SNPfile_bed} | 
@@ -89,6 +89,8 @@ rule get_only_white_list_SNPs:
     benchmark:
         "benchmarks/get_only_white_list_SNPs/{sample}.txt"
     threads: 8
+    conda:
+        "../envs/perl.yaml"
     shell:
         """
         fgrep -w -f {params.SNPwhite_list} {input} | 
@@ -115,7 +117,7 @@ rule convert_read_to_BC_information:
     benchmark:
         "benchmarks/convert_read_to_BC_information/{sample}.txt"
     conda:
-        "../envs/bed-samtools.yaml"
+        "../envs/bed_sam_tools.yaml"
     shell:
         """
         join -1 2 -2 1 {input.whitelistSNP} {input.readBC}| 
