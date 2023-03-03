@@ -8,20 +8,25 @@ Samples:
   AM-RNA-497: "resources/data/mpimg_L20527-1_AM-RNA-497"
 
 # dirs & files
-SNPsplit_dir_path: "/project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2" # alignment
-SNPfile_gz_path: "/project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/all_SNPs_CAST_EiJ_GRCm38.txt.gz" #
+genome_dir_path: "/project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2" # alignment
+all_snps_path: "resources/snps/all_SNPs_CAST_EiJ_GRCm38.txt.gz"
+all_snps_bed_path: "resources/snps/all_SNPs_CAST_EiJ_GRCm38.bed"
 SNPwhite_list_path: "resources/scRNA/WT_SNP_white.list.tsv"
-SNPfile_bed_path: "/project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/all_SNPs_CAST_EiJ_GRCm38.bed"
-matrix_dir: "resources/barcodes/matrix/"
+#matrix_dir: "resources/barcodes/matrix/"
+matrix_dir_path: "results/sex2embryo/filtered_feature_bc_matrix/"
 
-# info
+# Info
 ID: "WT_E85"
-#embryo_nr: NA
+embryo_nr: NA
 
-# tools
+# tools + dirs Helene
 #star_path: "/project/bioinf_meissner/src/STAR/STAR-2.5.3a/bin/Linux_x86_64/STAR"
-SNPsplit_path: "/project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/SNPsplit" 
-samtools_dir_path: "/project/bioinf_meissner/src/samtools/samtools-1.6/" 
+#SNPsplit_path: "/project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/SNPsplit" 
 #samtools_path: "/project/bioinf_meissner/src/samtools/samtools-1.6/samtools" 
 #bamToBed_path: "/project/bioinf_meissner/src/bedtools/bedtools/bin/bamToBed" 
 #bedtools_path: "/project/bioinf_meissner/src/bedtools/bedtools/bin/bedtools" 
+#samtools_dir_path: "/project/bioinf_meissner/src/samtools/samtools-1.6/" 
+
+# files
+# "/project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/all_SNPs_CAST_EiJ_GRCm38.txt.gz"
+# "/project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2/all_SNPs_CAST_EiJ_GRCm38.bed"
