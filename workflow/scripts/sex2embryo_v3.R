@@ -16,7 +16,8 @@ set.seed(42)
 #ID <- args[4]
 
 cell2embryo_output <- snakemake@input[[1]]
-matrix_dir <- snakemake@config[["matrix_dir"]]
+#matrix_dir <- snakemake@config[["matrix_dir"]]
+matrix_dir <- snakemake@params[["matrix_dir"]]
 #outDir <- snakemake@config[["outDir"]]
 #ID <- snakemake@config[["ID"]]
 

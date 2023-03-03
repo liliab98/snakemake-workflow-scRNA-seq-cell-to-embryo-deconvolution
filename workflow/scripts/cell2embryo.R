@@ -39,9 +39,10 @@ pdf_file <- snakemake@output[[1]]
 cluster_RData <- snakemake@output[[2]] 
 snp_profile <- snakemake@output[[3]]
 session_RData <- snakemake@output[[4]]
-# NrOfEmbryos <- snakemake@config[["embryo_nr"]]
+#NrOfEmbryos <- snakemake@params[["embryo_nr"]]
 NrOfEmbryos <- NA
-ID <- snakemake@config[["ID"]]
+#ID <- snakemake@config[["ID"]]
+ID <- snakemake@params[["identifier"]]
 
 # variables
 SNPcutoff <- 1000

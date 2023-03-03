@@ -9,7 +9,7 @@ rule filter_for_unambigous_alignments1:
     benchmark:
         "benchmarks/filter_for_unambigous_alignments1/{sample}.txt"
     conda:
-        "../envs/bed_sam_tools.yaml"
+        "../envs/tools.yaml"
     shell:
         """
         samtools merge -n - {input.genome1} {input.genome2} | 
@@ -32,7 +32,7 @@ rule filter_for_unambigous_alignments2:
     benchmark:
         "benchmarks/filter_for_unambigous_alignments2/{sample}.txt"
     conda:
-        "../envs/bed_sam_tools.yaml"
+        "../envs/tools.yaml"
     shell:
         """
         less {input} | 
@@ -50,7 +50,7 @@ rule filter_for_unambigous_alignments3:
     benchmark:
         "benchmarks/filter_for_unambigous_alignments3/{sample}.txt"
     conda:
-        "../envs/bed_sam_tools.yaml"
+        "../envs/tools.yaml"
     shell:
         """
         bedtools sort -i {input} > {output} 2> {log}
@@ -62,17 +62,17 @@ rule assignment_of_reads_to_SNP:
     output:
         temp("results/snp/{sample}_SNP.tsv")
     params:
-        SNPfile_bed = config["SNPfile_bed_path"]
+        all_snps_bed = config["all_snps_bed_path"]
     log:
         "logs/assignment_of_reads_to_SNP/{sample}.log"
     benchmark:
         "benchmarks/assignment_of_reads_to_SNP/{sample}.txt"
     threads: 4
     conda:
-        "../envs/bed_sam_tools.yaml"
+        "../envs/tools.yaml"
     shell:
         """
-        bedtools intersect -sorted -wa -wb -a {input} -b {params.SNPfile_bed} | 
+        bedtools intersect -sorted -wa -wb -a {input} -b {params.all_snps_bed} | 
         perl -ane 'print "$F[8]\t$F[5]\t$F[3]\t$F[4]\n"' > {output} 2> {log}
         """
 
@@ -90,7 +90,7 @@ rule get_only_white_list_SNPs:
         "benchmarks/get_only_white_list_SNPs/{sample}.txt"
     threads: 8
     conda:
-        "../envs/perl.yaml"
+        "../envs/tools.yaml"
     shell:
         """
         fgrep -w -f {params.SNPwhite_list} {input} | 
@@ -111,16 +111,15 @@ rule convert_read_to_BC_information:
     output:
         SNPcount = "results/snp-count/{sample}_SNPcount.tsv",
         allSNPcount = "results/snp-count/{sample}_allSNPcount.tsv"
-    params:
     log:
         "logs/convert_read_to_BC_information/{sample}.log"
     benchmark:
         "benchmarks/convert_read_to_BC_information/{sample}.txt"
     conda:
-        "../envs/bed_sam_tools.yaml"
+        "../envs/tools.yaml"
     shell:
         """
-        join -1 2 -2 1 {input.whitelistSNP} {input.readBC}| 
+        join -1 2 -2 1 {input.whitelistSNP} {input.readBC} | 
         perl -ane 'print "$F[3]\t$F[1]\t$F[2]\n"' | 
         sort | 
         bedtools groupby -g 1,2 -c 3 -o  count_distinct > {output.SNPcount} 2> {log}

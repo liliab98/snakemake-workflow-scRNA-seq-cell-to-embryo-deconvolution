@@ -2,7 +2,7 @@ configfile: "config/config.yaml"
 
 rule all:
     input:
-        expand("results/sex2embryo/{param}_sex2embryo.RData", param=config["ID"])
+        expand("results/sex2embryo/{id}_sex2embryo.RData", id=config["ID"])
         #expand("results/snp/{sample}_splitread.bed", sample=config["Samples"])
 
 # In case of multiple libraries, combine aggregated data
@@ -10,11 +10,11 @@ rule combine_aggregated_data:
     input:
         expand("results/snp-count/{sample}_allSNPcount.tsv", sample=config["Samples"])
     output:
-        "results/snp-count/{param}_SNPcount.tsv"
+        "results/snp-count/{id}_SNPcount.tsv"
     log:
-        "logs/{param}_combine_aggregated_data.log"
+        "logs/{id}_combine_aggregated_data.log"
     benchmark:
-        "benchmarks/{param}_combine_aggregated_data.txt"
+        "benchmarks/{id}_combine_aggregated_data.txt"
     shell:
         """
         awk '{{printf $1 "-" ARGIND "\\t" $2 "\\t" $3 "\\n" }}' {input} > {output} 2> {log}
@@ -23,17 +23,19 @@ rule combine_aggregated_data:
 # Deconvolute single cells and assign to embryos
 rule deconvolute_aggregated_data:
     input:
-        "results/snp-count/{param}_SNPcount.tsv" 
+        "results/snp-count/{id}_SNPcount.tsv" 
     output:
-        pdf = "results/cell2embryo/{param}_cell2embryo.pdf",
-        cluster_rdata = "results/cell2embryo/{param}_cell2embryo.RData",
-        snp_profile = "results/cell2embryo/{param}_cell2embryo_SNPprofile.pdf",
-        session_rdata = "results/cell2embryo/{param}_cell2embryo_session.RData"
+        pdf = "results/cell2embryo/{id}_cell2embryo.pdf",
+        cluster_rdata = "results/cell2embryo/{id}_cell2embryo.RData",
+        snp_profile = "results/cell2embryo/{id}_cell2embryo_SNPprofile.pdf",
+        session_rdata = "results/cell2embryo/{id}_cell2embryo_session.RData"
+    params:
+        identifier = config["ID"]
+        #embryo_nr = config["embryo_nr"]
     log: 
-        "logs/{param}_deconvolute_aggregated_data.log"
+        "logs/{id}_deconvolute_aggregated_data.log"
     benchmark:
-        "benchmarks/{param}_deconvolute_aggregated_data.txt"
-    #threads: 30: 9372.1930 2:36:12, 16: 9386.8400 2:36:26, 8:9658.9963 2:40:58, 4:9472.1078 2:37:52, 1: 9343.0175 2:35:43
+        "benchmarks/{id}_deconvolute_aggregated_data.txt"
     conda:
         "envs/rscripts.yaml"
     script:
@@ -42,13 +44,15 @@ rule deconvolute_aggregated_data:
 # Determine sex of embryo
 rule determine_sex:
     input:
-        "results/cell2embryo/{param}_cell2embryo.RData"
+        "results/cell2embryo/{id}_cell2embryo.RData"
     output:
-        "results/sex2embryo/{param}_sex2embryo.RData"
+        "results/sex2embryo/{id}_sex2embryo.RData"
+    params:
+        matrix_dir = config["matrix_dir_path"]
     log:
-        "logs/{param}_determine_sex.log"
+        "logs/{id}_determine_sex.log"
     benchmark:
-        "benchmarks/{param}_determine_sex.txt"
+        "benchmarks/{id}_determine_sex.txt"
     conda:
         "envs/rscripts.yaml"
     script: "scripts/sex2embryo_v3.R"

@@ -26,7 +26,7 @@ rule assignment_of_BC_2_read_reduce_to_10X_BCs_part1:
 	benchmark:
 		"benchmarks/assignment_of_BC_2_read_reduce_to_10X_BCs_part1/{sample}.txt"
 	conda:
-		"../envs/perl.yaml"
+		"../envs/tools.yaml"
 	shell: 
 		"""
 		zcat {input} | 
@@ -56,12 +56,13 @@ rule assignment_of_BC_2_read_reduce_to_10X_BCs_part2:
 #kann eig raus	
 #rule join_fastq_files:
 #	input: 
-#		"data/test_{BC}_R2.fastq.gz"
+#		expand("data/{param}_{sample}_R2_002.fastq.gz", param=config["ID"])
 #	output:
-#		"{BC}_R2.fastq.gz"
+#		"{sample}_R2_001.fastq.gz"
 #	shell:
 #		"cat {input} > {output}"
 
+# genome indices are already generated
 rule alignment_using_STAR:
 	input:
 		lambda wildcards: f"{config['Samples'][wildcards.sample]}_R2_001.fastq.gz"
@@ -73,20 +74,20 @@ rule alignment_using_STAR:
 		temp("results/alignment/{sample}_SJ.out.tab"),
 		temp(directory("results/alignment/{sample}__STARtmp/"))
 	params:
-		SNPsplit_dir = config["SNPsplit_dir_path"]
+		genome_dir = config["genome_dir_path"]
 	log: 
 		"logs/alignment_using_STAR/{sample}.log"
 	benchmark:
 		"benchmarks/alignment_using_STAR/{sample}.log"
 	threads: 20
 	conda:
-		"../envs/alignment.yaml"
+		"../envs/star.yaml"
 	shell:
 		"""
 		STAR \
 		--runThreadN {threads} \
 		--outBAMsortingThreadN {threads} \
-		--genomeDir {params.SNPsplit_dir} \
+		--genomeDir {params.genome_dir} \
 		--readFilesIn {input} \
 		--readFilesCommand zcat \
 		--alignEndsType EndToEnd \
@@ -94,7 +95,7 @@ rule alignment_using_STAR:
 		--outSAMtype BAM Unsorted \
 		--outFileNamePrefix results/alignment/{wildcards.sample}_ 2>&1 {log}
 		"""
-#{params.star}
+
 rule assignment_of_reads_to_genome1:
 	input:
 		"results/alignment/{sample}_Aligned.out.bam"
@@ -106,20 +107,17 @@ rule assignment_of_reads_to_genome1:
 		"results/alignment/{sample}_Aligned.out.genome1.bam",	#tmp?
 		"results/alignment/{sample}_Aligned.out.genome2.bam"	#tmp?
 	params:
-		SNPsplit = config["SNPsplit_path"],
-		SNPfile_gz = config["SNPfile_gz_path"],
-		samtools_dir = config["samtools_dir_path"]	
+		all_snps = config["all_snps_path"]
 	log:
 		"logs/assignment_of_reads_to_genome1/{sample}.log"
 	benchmark:
 		"benchmarks/assignment_of_reads_to_genome1/{sample}.log"
-	threads: 8
-	#conda:
-	#	"../envs/snp.yaml"
+	#threads: 8
+	conda:
+		"../envs/snpsplit.yaml"
 	shell:
 		"""
-		perl {params.SNPsplit} \
-		--snp_file {params.SNPfile_gz} {input} \
-		--samtools_path {params.samtools_dir} 2> {log} 
+		SNPsplit \
+		--snp_file {params.all_snps} {input} 
+		mv AM* results/alignment/ 
 		"""
-#why is 2>&1 not working?
