@@ -30,8 +30,8 @@ rule deconvolute_aggregated_data:
         snp_profile = "results/cell2embryo/{id}_cell2embryo_SNPprofile.pdf",
         session_rdata = "results/cell2embryo/{id}_cell2embryo_session.RData"
     params:
-        identifier = config["ID"]
-        #embryo_nr = config["embryo_nr"]
+        identifier = config["ID"],
+        embryo_nr = config["embryo_nr"]
     log: 
         "logs/{id}_deconvolute_aggregated_data.log"
     benchmark:

@@ -8,21 +8,9 @@ sink(log)
 library(Matrix)
 set.seed(42)
 
-# data
-#cellranger_dir <- args[1]
-#matrix_dir = args[1]
-#cell2embryo_output <- args[2]
-#outDir <- args[3]
-#ID <- args[4]
-
+# data & files
 cell2embryo_output <- snakemake@input[[1]]
-#matrix_dir <- snakemake@config[["matrix_dir"]]
 matrix_dir <- snakemake@params[["matrix_dir"]]
-#outDir <- snakemake@config[["outDir"]]
-#ID <- snakemake@config[["ID"]]
-
-# files
-#out_RData <- file.path(outDir, paste(ID, "_sex2embryo.RData", sep=""))
 out_RData <- snakemake@output[[1]]
 
 # variables

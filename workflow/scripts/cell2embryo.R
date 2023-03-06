@@ -23,25 +23,16 @@ require(sfsmisc)
 
 set.seed(42)
 
-# data bash
-#SNPcountFile <- args[1]
-#outDir <- args[2]
-#ID <- args[3]
-#NrOfEmbryos <- as.numeric(args[4])
-
-# files
-#pdf_file <- file.path(outDir, paste(ID, "_cell2embryo.pdf", sep=""))
-#cluster_RData <- file.path(outDir, paste(ID, "_cell2embryo.RData", sep=""))
-
-# data snakemake
+# data & files
 SNPcountFile <- snakemake@input[[1]]
 pdf_file <- snakemake@output[[1]] 
 cluster_RData <- snakemake@output[[2]] 
 snp_profile <- snakemake@output[[3]]
 session_RData <- snakemake@output[[4]]
-#NrOfEmbryos <- snakemake@params[["embryo_nr"]]
-NrOfEmbryos <- NA
-#ID <- snakemake@config[["ID"]]
+NrOfEmbryos <- snakemake@params[["embryo_nr"]]
+if(NrOfEmbryos==0){
+    NrOfEmbryos <- NA
+}
 ID <- snakemake@params[["identifier"]]
 
 # variables
