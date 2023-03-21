@@ -3,16 +3,19 @@ configfile: "config/config.yaml"
 
 rule all:
     input:
-        expand("results/sex2embryo/{id}_sex2embryo.RData", id=config["ID"]),
-        #expand("results/snp/{sample}_splitread.bed", sample=config["Samples"])
+        expand("results/rscripts/{id}_sex2embryo.RData", id=config["ID"]),
 
 
 # In case of multiple libraries, combine aggregated data
 rule combine_aggregated_data:
     input:
-        expand("results/snp-count/{sample}_allSNPcount.tsv", sample=config["Samples"]),
+        expand(
+            "results/snp/{id}_{sample}_allSNPcount.tsv",
+            id=config["ID"],
+            sample=config["Samples"],
+        ),
     output:
-        "results/snp-count/{id}_SNPcount.tsv",
+        "results/snp/{id}_SNPcount.tsv",
     log:
         "logs/{id}_combine_aggregated_data.log",
     benchmark:
@@ -26,12 +29,12 @@ rule combine_aggregated_data:
 # Deconvolute single cells and assign to embryos
 rule deconvolute_aggregated_data:
     input:
-        "results/snp-count/{id}_SNPcount.tsv",
+        "results/snp/{id}_SNPcount.tsv",
     output:
-        pdf="results/cell2embryo/{id}_cell2embryo.pdf",
-        cluster_rdata="results/cell2embryo/{id}_cell2embryo.RData",
-        snp_profile="results/cell2embryo/{id}_cell2embryo_SNPprofile.pdf",
-        session_rdata="results/cell2embryo/{id}_cell2embryo_session.RData",
+        pdf="results/rscripts/{id}_cell2embryo.pdf",
+        cluster_rdata="results/rscripts/{id}_cell2embryo.RData",
+        snp_profile="results/rscripts/{id}_cell2embryo_SNPprofile.pdf",
+        session_rdata="results/rscripts/{id}_cell2embryo_session.RData",
     params:
         identifier=config["ID"],
         embryo_nr=config["embryo_nr"],
@@ -48,9 +51,9 @@ rule deconvolute_aggregated_data:
 # Determine sex of embryo
 rule determine_sex:
     input:
-        "results/cell2embryo/{id}_cell2embryo.RData",
+        "results/rscripts/{id}_cell2embryo.RData",
     output:
-        "results/sex2embryo/{id}_sex2embryo.RData",
+        "results/rscripts/{id}_sex2embryo.RData",
     params:
         matrix_dir=config["matrix_dir_path"],
     log:

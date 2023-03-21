@@ -1,12 +1,12 @@
 rule get_BCs_surviving_10X_pipeline:
     input:
-        lambda wildcards: f"{config['Barcodes'][wildcards.sample]}barcodes.tsv.gz",
+        lambda wildcards: f"{config['Barcodes'][wildcards.sample]}{config['ID']}_barcodes.tsv.gz",
     output:
-        "results/barcodes/WT_E85_{sample}_10X_barcodes.tsv",
+        temp("results/barcodes/{id}_{sample}_10X_barcodes.tsv"),
     log:
-        "logs/get_BCs_surviving_10X_pipeline/{sample}.log",
+        "logs/get_BCs_surviving_10X_pipeline/{id}_{sample}.log",
     benchmark:
-        "benchmarks/get_BCs_surviving_10X_pipeline/{sample}.txt"
+        "benchmarks/get_BCs_surviving_10X_pipeline/{id}_{sample}.txt"
     shell:
         """
         if file --mime-type {input} | grep -q gzip$; then
@@ -21,11 +21,11 @@ rule assignment_of_BC_2_read_reduce_to_10X_BCs_part1:
     input:
         lambda wildcards: f"{config['Samples'][wildcards.sample]}_R1_001.fastq.gz",
     output:
-        temp("results/barcodes/WT_E85_{sample}_read.BC.tmp"),
+        temp("results/barcodes/{id}_{sample}_read.BC.tmp"),
     log:
-        "logs/assignment_of_BC_2_read_reduce_to_10X_BCs_part1/{sample}.log",
+        "logs/assignment_of_BC_2_read_reduce_to_10X_BCs_part1/{id}_{sample}.log",
     benchmark:
-        "benchmarks/assignment_of_BC_2_read_reduce_to_10X_BCs_part1/{sample}.txt"
+        "benchmarks/assignment_of_BC_2_read_reduce_to_10X_BCs_part1/{id}_{sample}.txt"
     conda:
         "../envs/tools.yaml"
     shell:
@@ -41,14 +41,14 @@ rule assignment_of_BC_2_read_reduce_to_10X_BCs_part1:
 
 rule assignment_of_BC_2_read_reduce_to_10X_BCs_part2:
     input:
-        bc="results/barcodes/WT_E85_{sample}_10X_barcodes.tsv",
-        bc_read_tmp="results/barcodes/WT_E85_{sample}_read.BC.tmp",
+        bc="results/barcodes/{id}_{sample}_10X_barcodes.tsv",
+        bc_read_tmp="results/barcodes/{id}_{sample}_read.BC.tmp",
     output:
-        "results/barcodes/WT_E85_{sample}_read.BC.tsv",
+        "results/barcodes/{id}_{sample}_read.BC.tsv",
     log:
-        "logs/assignment_of_BC_2_read_reduce_to_10X_BCs_part2/{sample}.log",
+        "logs/assignment_of_BC_2_read_reduce_to_10X_BCs_part2/{id}_{sample}.log",
     benchmark:
-        "benchmarks/assignment_of_BC_2_read_reduce_to_10X_BCs_part2/{sample}.txt"
+        "benchmarks/assignment_of_BC_2_read_reduce_to_10X_BCs_part2/{id}_{sample}.txt"
     shell:
         """
         fgrep -f {input.bc} {input.bc_read_tmp} | 
@@ -61,18 +61,18 @@ rule alignment_using_STAR:
     input:
         lambda wildcards: f"{config['Samples'][wildcards.sample]}_R2_001.fastq.gz",
     output:
-        "results/alignment/{sample}_Aligned.out.bam",  #temp? 
-        temp("results/alignment/{sample}_Log.final.out"),
-        temp("results/alignment/{sample}_Log.out"),
-        temp("results/alignment/{sample}_Log.progress.out"),
-        temp("results/alignment/{sample}_SJ.out.tab"),
-        temp(directory("results/alignment/{sample}__STARtmp/")),
+        "results/alignment/{id}_{sample}_Aligned.out.bam",
+        temp("results/alignment/{id}_{sample}_Log.final.out"),
+        temp("results/alignment/{id}_{sample}_Log.out"),
+        temp("results/alignment/{id}_{sample}_Log.progress.out"),
+        temp("results/alignment/{id}_{sample}_SJ.out.tab"),
+        temp(directory("results/alignment/{id}_{sample}__STARtmp/")),
     params:
         genome_dir=config["genome_dir_path"],
     log:
-        "logs/alignment_using_STAR/{sample}.log",
+        "logs/alignment_using_STAR/{id}_{sample}.log",
     benchmark:
-        "benchmarks/alignment_using_STAR/{sample}.log"
+        "benchmarks/alignment_using_STAR/{id}_{sample}.log"
     threads: 20
     conda:
         "../envs/star.yaml"
@@ -87,32 +87,30 @@ rule alignment_using_STAR:
         --alignEndsType EndToEnd \
         --outSAMattributes NH HI NM MD \
         --outSAMtype BAM Unsorted \
-        --outFileNamePrefix results/alignment/{wildcards.sample}_ 2>&1 {log}
+        --outFileNamePrefix results/alignment/{wildcards.id}_{wildcards.sample}_ 2>&1 {log}
         """
 
 
 rule assignment_of_reads_to_genome1:
     input:
-        "results/alignment/{sample}_Aligned.out.bam",
+        "results/alignment/{id}_{sample}_Aligned.out.bam",
     output:
-        temp("results/alignment/{sample}_Aligned.out.SNPsplit_sort.txt"),
-        temp("results/alignment/{sample}_Aligned.out.SNPsplit_report.txt"),
-        temp("results/alignment/{sample}_Aligned.out.unassigned.bam"),
-        "results/alignment/{sample}_Aligned.out.allele_flagged.bam",
-        "results/alignment/{sample}_Aligned.out.genome1.bam",  #tmp?
-        "results/alignment/{sample}_Aligned.out.genome2.bam",  #tmp?
+        temp("results/alignment/{id}_{sample}_Aligned.out.SNPsplit_sort.txt"),
+        temp("results/alignment/{id}_{sample}_Aligned.out.SNPsplit_report.txt"),
+        temp("results/alignment/{id}_{sample}_Aligned.out.unassigned.bam"),
+        temp("results/alignment/{id}_{sample}_Aligned.out.allele_flagged.bam"),
+        "results/alignment/{id}_{sample}_Aligned.out.genome1.bam",
+        "results/alignment/{id}_{sample}_Aligned.out.genome2.bam",
     params:
         all_snps=config["all_snps_path"],
     log:
-        "logs/assignment_of_reads_to_genome1/{sample}.log",
+        "logs/assignment_of_reads_to_genome1/{id}_{sample}.log",
     benchmark:
-        "benchmarks/assignment_of_reads_to_genome1/{sample}.log"
-    # threads: 8
+        "benchmarks/assignment_of_reads_to_genome1/{id}_{sample}.log"
     conda:
         "../envs/snpsplit.yaml"
     shell:
         """
-        SNPsplit \
-        --snp_file {params.all_snps} {input} 
-        mv AM* results/alignment/ 
+        SNPsplit --snp_file {params.all_snps} {input} 2> {log}
+        mv {wildcards.id}_{wildcards.sample}* results/alignment/
         """

@@ -1,13 +1,13 @@
 rule filter_for_unambigous_alignments1:
     input:
-        genome1 = "results/alignment/{sample}_Aligned.out.genome1.bam",
-        genome2 = "results/alignment/{sample}_Aligned.out.genome2.bam"
+        genome1="results/alignment/{id}_{sample}_Aligned.out.genome1.bam",
+        genome2="results/alignment/{id}_{sample}_Aligned.out.genome2.bam",
     output:
-        "results/snp/{sample}_splitread.bed"
+        temp("results/snp/{id}_{sample}_splitread.bed"),
     log:
-        "logs/filter_for_unambigous_alignments1/{sample}.log"
+        "logs/filter_for_unambigous_alignments1/{id}_{sample}.log",
     benchmark:
-        "benchmarks/filter_for_unambigous_alignments1/{sample}.txt"
+        "benchmarks/filter_for_unambigous_alignments1/{id}_{sample}.txt"
     conda:
         "../envs/tools.yaml"
     shell:
@@ -22,15 +22,16 @@ rule filter_for_unambigous_alignments1:
         sort -k4,4 > {output} 2> {log}
         """
 
+
 rule filter_for_unambigous_alignments2:
     input:
-        "results/snp/{sample}_splitread.bed"
+        "results/snp/{id}_{sample}_splitread.bed",
     output:
-        temp("results/snp/{sample}_unambiguous.tmp")
+        temp("results/snp/{id}_{sample}_unambiguous.tmp"),
     log:
-        "logs/filter_for_unambigous_alignments2/{sample}.log"
+        "logs/filter_for_unambigous_alignments2/{id}_{sample}.log",
     benchmark:
-        "benchmarks/filter_for_unambigous_alignments2/{sample}.txt"
+        "benchmarks/filter_for_unambigous_alignments2/{id}_{sample}.txt"
     conda:
         "../envs/tools.yaml"
     shell:
@@ -40,15 +41,16 @@ rule filter_for_unambigous_alignments2:
         perl -ane 'if($F[1]!~m/,/ && $F[4]!~m/,/){{@s=split(/,/,$F[2]); @e=split(/,/,$F[3]); for($i=0; $i<scalar(@s); $i++){{print "$F[1]\t$s[$i]\t$e[$i]\t$F[0]\t$F[4]\n"}}}}' > {output} 2> {log}
         """
 
+
 rule filter_for_unambigous_alignments3:
     input:
-        "results/snp/{sample}_unambiguous.tmp"
+        "results/snp/{id}_{sample}_unambiguous.tmp",
     output:
-        temp("results/snp/{sample}_unambiguous.bed")
+        temp("results/snp/{id}_{sample}_unambiguous.bed"),
     log:
-        "logs/filter_for_unambigous_alignments3/{sample}.log"
+        "logs/filter_for_unambigous_alignments3/{id}_{sample}.log",
     benchmark:
-        "benchmarks/filter_for_unambigous_alignments3/{sample}.txt"
+        "benchmarks/filter_for_unambigous_alignments3/{id}_{sample}.txt"
     conda:
         "../envs/tools.yaml"
     shell:
@@ -56,18 +58,18 @@ rule filter_for_unambigous_alignments3:
         bedtools sort -i {input} > {output} 2> {log}
         """
 
+
 rule assignment_of_reads_to_SNP:
     input:
-        "results/snp/{sample}_unambiguous.bed"
+        "results/snp/{id}_{sample}_unambiguous.bed",
     output:
-        temp("results/snp/{sample}_SNP.tsv")
+        temp("results/snp/{id}_{sample}_SNP.tsv"),
     params:
-        all_snps_bed = config["all_snps_bed_path"]
+        all_snps_bed=config["all_snps_bed_path"],
     log:
-        "logs/assignment_of_reads_to_SNP/{sample}.log"
+        "logs/assignment_of_reads_to_SNP/{id}_{sample}.log",
     benchmark:
-        "benchmarks/assignment_of_reads_to_SNP/{sample}.txt"
-    threads: 4
+        "benchmarks/assignment_of_reads_to_SNP/{id}_{sample}.txt"
     conda:
         "../envs/tools.yaml"
     shell:
@@ -76,19 +78,19 @@ rule assignment_of_reads_to_SNP:
         perl -ane 'print "$F[8]\t$F[5]\t$F[3]\t$F[4]\n"' > {output} 2> {log}
         """
 
+
 rule get_only_white_list_SNPs:
     input:
-        "results/snp/{sample}_SNP.tsv"
+        "results/snp/{id}_{sample}_SNP.tsv",
     output:
-        whitelistSNP = "results/snp/{sample}_whitelistSNP.tsv",
-        allSNP = "results/snp/{sample}_allSNP.tsv"
-    params: 
-        SNPwhite_list = config["SNPwhite_list_path"]
+        whitelistSNP="results/snp/{id}_{sample}_whitelistSNP.tsv",
+        allSNP="results/snp/{id}_{sample}_allSNP.tsv",
+    params:
+        SNPwhite_list=config["SNPwhite_list_path"],
     log:
-        "logs/get_only_white_list_SNPs/{sample}.log"
+        "logs/get_only_white_list_SNPs/{id}_{sample}.log",
     benchmark:
-        "benchmarks/get_only_white_list_SNPs/{sample}.txt"
-    threads: 8
+        "benchmarks/get_only_white_list_SNPs/{id}_{sample}.txt"
     conda:
         "../envs/tools.yaml"
     shell:
@@ -103,18 +105,19 @@ rule get_only_white_list_SNPs:
         uniq > {output.allSNP} 2> {log}
         """
 
+
 rule convert_read_to_BC_information:
     input:
-        whitelistSNP = "results/snp/{sample}_whitelistSNP.tsv",
-        allSNP = "results/snp/{sample}_allSNP.tsv",
-        readBC = "results/barcodes/WT_E85_{sample}_read.BC.tsv"
+        whitelistSNP="results/snp/{id}_{sample}_whitelistSNP.tsv",
+        allSNP="results/snp/{id}_{sample}_allSNP.tsv",
+        readBC="results/barcodes/{id}_{sample}_read.BC.tsv",
     output:
-        SNPcount = "results/snp-count/{sample}_SNPcount.tsv",
-        allSNPcount = "results/snp-count/{sample}_allSNPcount.tsv"
+        SNPcount="results/snp/{id}_{sample}_SNPcount.tsv",
+        allSNPcount="results/snp/{id}_{sample}_allSNPcount.tsv",
     log:
-        "logs/convert_read_to_BC_information/{sample}.log"
+        "logs/convert_read_to_BC_information/{id}_{sample}.log",
     benchmark:
-        "benchmarks/convert_read_to_BC_information/{sample}.txt"
+        "benchmarks/convert_read_to_BC_information/{id}_{sample}.txt"
     conda:
         "../envs/tools.yaml"
     shell:

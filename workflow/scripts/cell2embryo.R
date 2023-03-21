@@ -51,8 +51,6 @@ color <- unlist(mapply(brewer.pal, col_pals$maxcolors, rownames(col_pals)))
 pdf(pdf_file)
 
 # read SNP count data
-#data <- as.matrix(read.table(SNPcountFile, header=T, row.names=1))
-#load(SNPcountFile)
 data <- read.table(SNPcountFile, header=F, col.names=c("BC","ref","count"))
 data <- acast(data, BC~ref, fill=0, fun.aggregate=sum)
 
