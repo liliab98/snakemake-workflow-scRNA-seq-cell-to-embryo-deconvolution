@@ -1,16 +1,27 @@
 # Snakemake workflow: single-cell RNA cell to embryo deconvolution
 
-A Snakemake workflow written by Liliane Bader as part of her Bachelor Thesis supported by Helene Kretzmer and Sandro Andreotti. The analysis steps of this workflow are part of the project ["Epigenetic regulator function through mouse gastrulation"]( https://github.com/HeleneKretzmer/EpigeneticRegulators_MouseGastrulation) done by [Grosswendt, S., Kretzmer, H., Smith, Z.D. et al.](https://doi.org/10.1038/s41586-020-2552-x).
+A Snakemake workflow written by Liliane Bader as part of her Bachelor Thesis supported by Helene Kretzmer and Sandro Andreotti. The analysis steps of this workflow are part of the project ["Epigenetic regulator function through mouse gastrulation"]( https://github.com/HeleneKretzmer/EpigeneticRegulators_MouseGastrulation) following [Grosswendt, S., Kretzmer, H., Smith, Z.D. et al.](https://doi.org/10.1038/s41586-020-2552-x).
 
 ## Table of Contents
-1. [Requirements](#requirements)
-2. [Usage](#usage)
-3. [Technologies](#technologies)
+1. [Technologies](#technologies)
+2. [Requirements](#requirements)
+3. [Usage](#usage)
+
+
+## Technologies
+***
+A list of technologies used within the project:
+* [STAR](https://example.com): Version 2.5.3a
+* [SNPsplit](https://example.com): Version 0.3.4
+* [Samtools](): Version 1.7 and 1.6
+* [Perl](): Version 5.26.2
+* [Bedtools](): Version 2.30.0
+* [R](https://example.com): Version 4.2.0
 
 
 ## Requirements
 ***
-Samples
+Multiple Samples are possible. In the following to simplify there are only two. For every sample there are two reads. They come from the same fragment and are distinguished by the attachment of  R1 or R2.
 
 
 ## Usage
@@ -28,13 +39,13 @@ The following entries are expected in the config file:
 
     ID: "WT_E85"
 
-Barcodes should be named [ID]__barcodes.tsv.gz and stored in the respective sample folder
+Barcodes should be named '[ID]_barcodes.tsv.gz' and stored in the respective sample folder
 
     Barcodes:
         [sample1]: "resources/barcodes/[sample1]/"
         [sample2]: "resources/barcodes/[sample2]/"
 
-Samples should be named [sample]__R1_001.fastq.gz and [sample]__R2_001.fastq.gz respectively
+Samples should be named '[sample]_R1_001.fastq.gz' and '[sample]_R2_001.fastq.gz' respectively
     
     Samples:
         [sample1]: "resources/data/[sample1]"
@@ -64,20 +75,10 @@ Execute the workflow locally via
 
     snakemake --use-conda --cores $N
 
-The number of threads ($N) should at least be 1, but at best 20.
+The number of threads ($N) should at least be 1, at best 20.
 
 See the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/) for further details.
 
-
-## Technologies
-***
-A list of technologies used within the project:
-* [STAR](https://example.com): Version 2.5.3a
-* [SNPsplit](https://example.com): Version 0.3.4
-* [Samtools](): Version 1.7 and 1.6
-* [Perl](): Version 5.26.2
-* [Bedtools](): Version 2.30.0
-* [R](https://example.com): Version 4.2.0
 
 <!---
 ## Collaboration
