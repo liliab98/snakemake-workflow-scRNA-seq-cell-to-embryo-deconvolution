@@ -12,7 +12,7 @@ A Snakemake workflow written by Liliane Bader as part of her Bachelor Thesis sup
 ***
 A list of technologies used within the project:
 * [STAR](https://hbctraining.github.io/Intro-to-rnaseq-hpc-O2/lessons/03_alignment.html): Version 2.5.3a
-* [SNPsplit](https://www.bioinformatics.babraham.ac.uk/projects/SNPsplit/SNPsplit_User_Guide.pdf): Version 0.3.4
+* [SNPsplit](https://www.bioinformatics.babraham.ac.uk/projects/SNPsplit/): Version 0.3.4
 * [Samtools](https://www.htslib.org/): Version 1.7 and 1.6
 * [Perl](https://www.perl.org/): Version 5.26.2
 * [Bedtools](https://bedtools.readthedocs.io/en/latest/index.html): Version 2.30.0
