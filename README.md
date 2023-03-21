@@ -11,17 +11,17 @@ A Snakemake workflow written by Liliane Bader as part of her Bachelor Thesis sup
 ## Technologies
 ***
 A list of technologies used within the project:
-* [STAR](https://example.com): Version 2.5.3a
-* [SNPsplit](https://example.com): Version 0.3.4
-* [Samtools](): Version 1.7 and 1.6
-* [Perl](): Version 5.26.2
-* [Bedtools](): Version 2.30.0
-* [R](https://example.com): Version 4.2.0
+* [STAR](https://hbctraining.github.io/Intro-to-rnaseq-hpc-O2/lessons/03_alignment.html): Version 2.5.3a
+* [SNPsplit](https://www.bioinformatics.babraham.ac.uk/projects/SNPsplit/SNPsplit_User_Guide.pdf): Version 0.3.4
+* [Samtools](https://www.htslib.org/): Version 1.7 and 1.6
+* [Perl](https://www.perl.org/): Version 5.26.2
+* [Bedtools](https://bedtools.readthedocs.io/en/latest/index.html): Version 2.30.0
+* [R](https://www.r-project.org/): Version 4.2.0
 
 
 ## Requirements
 ***
-Multiple Samples are possible. In the following to simplify there are only two. For every sample there are two reads. They come from the same fragment and are distinguished by the attachment of  R1 or R2.
+Multiple Samples are possible. In the following to simplify there are only two. For every sample there are two reads. They come from the same fragment and are distinguished by the attachment of  R1 or R2 to the name.
 
 
 ## Usage
