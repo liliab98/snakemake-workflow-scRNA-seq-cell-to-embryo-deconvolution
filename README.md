@@ -1,30 +1,60 @@
 # Snakemake workflow: single-cell RNA cell to embryo deconvolution
 
+A Snakemake workflow written by Liliane Bader as part of her Bachelor Thesis supported by Helene Kretzmer and Sandro Andreotti. The analysis steps of this workflow are part of the project ["Epigenetic regulator function through mouse gastrulation"]( https://github.com/HeleneKretzmer/EpigeneticRegulators_MouseGastrulation) done by [Grosswendt, S., Kretzmer, H., Smith, Z.D. et al.](https://doi.org/10.1038/s41586-020-2552-x).
+
 ## Table of Contents
-1. [General Info](#general-info)
-2. [Usage] (#usage)
+1. [Requirements](#requirements)
+2. [Usage](#usage)
 3. [Technologies](#technologies)
 
 
-### General Info
+## Requirements
 ***
-A Snakemake workflow written by Liliane Bader as part of her Bachelor Thesis supported by Helene Kretzmer and Sandro Andreotti. The analysis steps of this workflow are part of the project [Epigenetic regulator function through mouse gastrulation]( https://github.com/HeleneKretzmer/EpigeneticRegulators_MouseGastrulation) done by [Grosswendt, S., Kretzmer, H., Smith, Z.D. et al.](https://doi.org/10.1038/s41586-020-2552-x).
+Samples
 
 
 ## Usage
 
-In any case, if you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this (original) repository and, if already available, its DOI (see above).
+In any case, if you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this (original) repository.
 
-#### Step 1: Obtain a copy of this workflow
+### Step 1: Obtain a copy of this workflow
 
-1. Create a new github repository using this workflow [as a template](https://help.github.com/en/articles/creating-a-repository-from-a-template).
-2. [Clone](https://help.github.com/en/articles/cloning-a-repository) the newly created repository to your local system, into the place where you want to perform the data analysis.
+If you simply want to use this workflow, download and extract the latest release. If you intend to modify and further develop this workflow, fork this repository. Please consider providing any generally applicable modifications via a pull request.
 
-#### Step 2: Configure workflow
+### Step 2: Configure workflow
 
 Configure the workflow according to your needs via editing the file `config.yaml`.
+The following entries are expected in the config file:
 
-#### Step 3: Execute workflow
+    ID: "WT_E85"
+
+Barcodes should be named [ID]__barcodes.tsv.gz and stored in the respective sample folder
+
+    Barcodes:
+        [sample1]: "resources/barcodes/[sample1]/"
+        [sample2]: "resources/barcodes/[sample2]/"
+
+Samples should be named [sample]__R1_001.fastq.gz and [sample]__R2_001.fastq.gz respectively
+    
+    Samples:
+        [sample1]: "resources/data/[sample1]"
+        [sample2]: "resources/data/[sample2]"
+
+genome_dir is the directory where the previously generated genome indices are stored (needed for alignment)
+    
+    genome_dir_path: "/project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2" 
+
+the following three files are needed while preparing the alignment for deconvolution
+    
+    all_snps_path: "resources/snps/all_SNPs_CAST_EiJ_GRCm38.txt.gz" 
+    all_snps_bed_path: "resources/snps/all_SNPs_CAST_EiJ_GRCm38.bed"
+    SNPwhite_list_path: "resources/scRNA/WT_SNP_white.list.tsv"
+
+matrix_dir is where three matrices needed by the RScript "sex2embryo" for the determination of the sex
+    
+    matrix_dir_path: "resources/barcodes/matrix/" 
+
+### Step 3: Execute workflow
 
 Test your configuration by performing a dry-run via
 
@@ -36,12 +66,7 @@ Execute the workflow locally via
 
 The number of threads ($N) should at least be 1, but at best 20.
 
-#### Step 4: Commit changes
-
-Whenever you change something, don't forget to commit the changes back to your github copy of the repository:
-
-    git commit -a
-    git push
+See the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/) for further details.
 
 
 ## Technologies
