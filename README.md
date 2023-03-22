@@ -21,7 +21,7 @@ A list of technologies used within the project:
 
 ## Requirements
 ***
-Multiple Samples are possible. In the following to simplify there are only two. For every sample there are two reads. They come from the same fragment and are distinguished by the attachment of  R1 or R2 to the name.
+Multiple samples are possible. In the following to simplify there are only two. For every sample there are two reads. They come from the same fragment and are distinguished by the attachment of  R1 or R2 and the end of the name.
 
 
 ## Usage
