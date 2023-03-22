@@ -22,5 +22,5 @@ genome_dir_path: "/project/bioinf_meissner/src/SNPsplit/SNPsplit_v0.3.2"
 all_snps_path: "resources/snps/all_SNPs_CAST_EiJ_GRCm38.txt.gz" 
 all_snps_bed_path: "resources/snps/all_SNPs_CAST_EiJ_GRCm38.bed"
 SNPwhite_list_path: "resources/scRNA/WT_SNP_white.list.tsv"
-# matrix_dir is where three matrices needed by the RScript "sex2embryo" for the determination of the sex
+# matrix_dir contains three matrices needed by the RScript "sex2embryo" for the determination of the sex 
 matrix_dir_path: "resources/barcodes/matrix/" 
